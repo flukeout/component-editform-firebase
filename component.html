@@ -7,6 +7,9 @@
     <shadow></shadow>
     <script type="text/json" id="ceci-definition">
       {
+        "thumbnail": "./thumbnail.png",
+        "name": "Edit Form",
+        "description": "Edits an item!",
         "listeners": {
           "editItem": {
             "description": "Set the item to edit with the form.",
@@ -20,13 +23,7 @@
       }
     </script>
   </template>
-  <description>
-    Edits an item!
-  </description>
   <tags>form,edit,data</tags>
-  <thumbnail>
-      <img src="thumbnail.png" />
-  </thumbnail>
     <script>
       Polymer("ceci-editform", {
         storedData : {},
