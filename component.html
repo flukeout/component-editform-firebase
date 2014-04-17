@@ -5,118 +5,117 @@
 
     </div>
     <shadow></shadow>
-    <script type="text/json" id="ceci-definition">
-      {
-        "thumbnail": "./thumbnail.png",
-        "name": "Edit Form",
-        "description": "Edits an item!",
-        "listeners": {
-          "editItem": {
-            "description": "Set the item to edit with the form.",
-            "label": "Set Edit Item"
-          },
-          "submitForm": {
-            "description": "Submit this form.",
-            "label": "Submit Form"
-          }
+  </template>
+  <ceci-definition>
+    {
+      "thumbnail": "./thumbnail.png",
+      "name": "Edit Form",
+      "description": "Edits an item!",
+      "listeners": {
+        "editItem": {
+          "description": "Set the item to edit with the form.",
+          "label": "Set Edit Item"
+        },
+        "submitForm": {
+          "description": "Submit this form.",
+          "label": "Submit Form"
         }
       }
-    </script>
-  </template>
-  <tags>form,edit,data</tags>
-    <script>
-      Polymer("ceci-editform", {
-        storedData : {},
-        db: {},
-        datascope: {},
-        storedData: {},
-        ready: function(){
-          this.super();
-        },
-        editItem : function(scope){
-          var self = this;
-          var ca = document.querySelector("ceci-app");
+    }
+  </ceci-definition>
+  <script>
+    Polymer("ceci-editform", {
+      storedData : {},
+      db: {},
+      datascope: {},
+      storedData: {},
+      ready: function(){
+        this.super();
+      },
+      editItem : function(scope){
+        var self = this;
+        var ca = document.querySelector("ceci-app");
 
-          if(!ca){
-            window.addEventListener("CeciDataConnectionLoaded", function(){
-              self.editItemFirebase(scope);
-            });
-          } else {
-            if(ca.firebase){
-              this.editItemFirebase(scope);
-            }
-          }
-
-        },
-        editItemFirebase : function(scope){
-          var self = this;
-
-          document.querySelector("ceci-app").getFirebaseObject('form-data', "", function(data){
-
-            self.db = data;
-            self.datascope = scope;
-            self.storedData = data || {};
-
-            for (var i = 0; i < self.datascope.length; i++){
-              var scopeItem = self.datascope[i];
-              self.storedData = self.storedData[scopeItem["dataset"]][scopeItem["index"]];
-            }
-
-            var form = self.shadowRoot.querySelector(".form");
-            form.innerHTML = "";
-
-            for(key in self.storedData){
-              if(typeof self.storedData[key] != "object"){
-
-                var label = document.createElement("label");
-                label.innerHTML = key;
-                form.appendChild(label);
-
-                var input = document.createElement("input");
-                input.value = self.storedData[key];
-                input.setAttribute("storeName",key);
-                form.appendChild(input);
-              }
-            }
-
+        if(!ca){
+          window.addEventListener("CeciDataConnectionLoaded", function(){
+            self.editItemFirebase(scope);
           });
-
-        },
-        submitForm : function(){
-          // This resubmits the entire DB with the updated record
-          var self = this;
-
-          var newData = self.storedData;
-          var fields = self.shadowRoot.querySelectorAll(".form input");
-
-          self.storedData = self.db;
-
-          for (var field in fields) {
-            if (fields.hasOwnProperty(field)) {
-              var f = fields[field];
-              var name = f.getAttribute("storeName");
-              var value = f.value;
-              newData[name] = value;
-            }
+        } else {
+          if(ca.firebase){
+            this.editItemFirebase(scope);
           }
+        }
 
-          // Gets a reference to the correct item
+      },
+      editItemFirebase : function(scope){
+        var self = this;
+
+        document.querySelector("ceci-app").getFirebaseObject('form-data', "", function(data){
+
+          self.db = data;
+          self.datascope = scope;
+          self.storedData = data || {};
+
           for (var i = 0; i < self.datascope.length; i++){
             var scopeItem = self.datascope[i];
             self.storedData = self.storedData[scopeItem["dataset"]][scopeItem["index"]];
           }
 
-          // Replaces it with the new item
-          self.storedData = newData;
+          var form = self.shadowRoot.querySelector(".form");
+          form.innerHTML = "";
 
-          // Saves over the entire DB with the new item included
-          var ca = document.querySelector("ceci-app");
-          ca.setFirebaseObject('form-data', self.db);
+          for(key in self.storedData){
+            if(typeof self.storedData[key] != "object"){
 
-          var event = new CustomEvent("storage");
-          window.dispatchEvent(event);
+              var label = document.createElement("label");
+              label.innerHTML = key;
+              form.appendChild(label);
 
+              var input = document.createElement("input");
+              input.value = self.storedData[key];
+              input.setAttribute("storeName",key);
+              form.appendChild(input);
+            }
+          }
+
+        });
+
+      },
+      submitForm : function(){
+        // This resubmits the entire DB with the updated record
+        var self = this;
+
+        var newData = self.storedData;
+        var fields = self.shadowRoot.querySelectorAll(".form input");
+
+        self.storedData = self.db;
+
+        for (var field in fields) {
+          if (fields.hasOwnProperty(field)) {
+            var f = fields[field];
+            var name = f.getAttribute("storeName");
+            var value = f.value;
+            newData[name] = value;
+          }
         }
-      });
-    </script>
+
+        // Gets a reference to the correct item
+        for (var i = 0; i < self.datascope.length; i++){
+          var scopeItem = self.datascope[i];
+          self.storedData = self.storedData[scopeItem["dataset"]][scopeItem["index"]];
+        }
+
+        // Replaces it with the new item
+        self.storedData = newData;
+
+        // Saves over the entire DB with the new item included
+        var ca = document.querySelector("ceci-app");
+        ca.setFirebaseObject('form-data', self.db);
+
+        var event = new CustomEvent("storage");
+        window.dispatchEvent(event);
+
+      }
+    });
+  </script>
 </polymer-element>
