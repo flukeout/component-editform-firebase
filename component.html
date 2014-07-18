@@ -68,7 +68,7 @@
             if(typeof self.storedData[key] != "object"){
 
               var label = document.createElement("label");
-              label.innerHTML = key;
+              label.textContent = key;
               form.appendChild(label);
 
               var input = document.createElement("input");
